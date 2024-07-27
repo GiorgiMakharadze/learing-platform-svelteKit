@@ -1,7 +1,14 @@
 <script lang="ts">
 	import * as Alert from '$lib/components/ui/alert';
+	// import Actions from '$lib/components/Actions.svelte';
 	import IconBadge from '$lib/components/IconBadge.svelte';
 	import TitleForm from '$lib/components/TitleForm.svelte';
+	import DescriptionForm from '$lib/components/DescriptionForm.svelte';
+	// import AttachmentForm from '$lib/components/AttachmentForm.svelte';
+	// import CategoryForm from '$lib/components/CategoryForm.svelte';
+	// import ChapterForm from '$lib/components/ChapterForm.svelte';
+	// import ImageForm from '$lib/components/ImageForm.svelte';
+	// import PriceForm from '$lib/components/PriceForm.svelte';
 	import {
 		AlertTriangle,
 		CircleDollarSign,
@@ -45,6 +52,8 @@
 				complete all fields {completionText}
 			</span>
 		</div>
+		<!-- add actions -->
+		<!-- <Actions disabled={!isComplete} isPublished={course.isPublished} /> -->
 	</div>
 
 	<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
@@ -54,6 +63,9 @@
 				<h2 class="text-xl">Customize your course</h2>
 			</div>
 			<TitleForm data={data.titleForm} />
+			<DescriptionForm data={data.descriptionForm} />
+			<!--<ImageForm imageUrl={course.imageUrl} />
+			<CategoryForm categories={data.categories} data={data.categoryForm} /> -->
 		</div>
 		<div class="space-y-6">
 			<div>
@@ -61,18 +73,24 @@
 					<IconBadge icon={ListChecks} />
 					<h2 class="text-xl">Course chapters</h2>
 				</div>
+				<!-- <ChapterForm
+					chapters={data.course.expand?.['chapters(course)'] ?? []}
+					data={data.chapterTitleForm}
+				/> -->
 			</div>
 			<div>
 				<div class="flex items-center gap-x-2">
 					<IconBadge icon={CircleDollarSign} />
 					<h2 class="text-xl">Sell your course</h2>
 				</div>
+				<!-- <PriceForm data={data.priceForm} /> -->
 			</div>
 			<div>
 				<div class="flex items-center gap-x-2">
 					<IconBadge icon={File} />
 					<h2 class="text-xl">Resources & Attachments</h2>
 				</div>
+				<!-- <AttachmentForm attachments={data.course?.expand?.['attachments(course)'] ?? []} /> -->
 			</div>
 		</div>
 	</div>
