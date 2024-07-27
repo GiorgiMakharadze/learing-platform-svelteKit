@@ -4,10 +4,10 @@
 	import IconBadge from '$lib/components/IconBadge.svelte';
 	import TitleForm from '$lib/components/TitleForm.svelte';
 	import DescriptionForm from '$lib/components/DescriptionForm.svelte';
+	import ImageForm from '$lib/components/ImageForm.svelte';
 	// import AttachmentForm from '$lib/components/AttachmentForm.svelte';
 	// import CategoryForm from '$lib/components/CategoryForm.svelte';
 	// import ChapterForm from '$lib/components/ChapterForm.svelte';
-	// import ImageForm from '$lib/components/ImageForm.svelte';
 	// import PriceForm from '$lib/components/PriceForm.svelte';
 	import {
 		AlertTriangle,
@@ -64,8 +64,8 @@
 			</div>
 			<TitleForm data={data.titleForm} />
 			<DescriptionForm data={data.descriptionForm} />
-			<!--<ImageForm imageUrl={course.imageUrl} />
-			<CategoryForm categories={data.categories} data={data.categoryForm} /> -->
+			<ImageForm imageUrl={course.imageUrl} />
+			<!--<CategoryForm categories={data.categories} data={data.categoryForm} /> -->
 		</div>
 		<div class="space-y-6">
 			<div>

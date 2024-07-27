@@ -22,11 +22,10 @@ export const load = async ({ params, locals: { pb, user } }) => {
 			}
 			return course;
 		} catch (e) {
-			// const { status } = e as ClientResponseError;
-			// if (status === 404) error(400, 'course does not exist');
-			console.log(e);
+			const { status } = e as ClientResponseError;
 
-			throw redirect(308, '/');
+			if (status === 404) error(400, 'course does not exist');
+			redirect(308, '/');
 		}
 	}
 
@@ -37,9 +36,9 @@ export const load = async ({ params, locals: { pb, user } }) => {
 			});
 			return categories;
 		} catch (e) {
-			// const { status } = e as ClientResponseError;
-			// if (status === 404) redirect(303, '/');
-			console.log(e);
+			const { status } = e as ClientResponseError;
+
+			if (status === 404) redirect(308, '/');
 			error(400, 'an error occurred');
 		}
 	}
@@ -105,6 +104,29 @@ export const actions: Actions = {
 			return message(form, errorMessage, {
 				status: 400
 			});
+		}
+	},
+	updateImage: async (event) => {
+		const {
+			locals: { pb },
+			params,
+			request
+		} = event;
+		const { courseId } = params;
+		const formData = await request.formData();
+		const image = formData.get('image');
+
+		if (image instanceof File) {
+			try {
+				await pb.collection('courses').update(courseId || '', { imageUrl: image });
+				return { message: 'successfully updated course image' };
+			} catch (e) {
+				const { message: errorMessage } = e as ClientResponseError;
+
+				return fail(400, {
+					message: errorMessage
+				});
+			}
 		}
 	}
 };
