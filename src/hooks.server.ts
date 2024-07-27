@@ -23,7 +23,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		!locals.user &&
 		!['/login', '/register'].includes(url.pathname)
 	) {
-		redirect(303, '/login');
+		throw redirect(303, '/login');
 	}
 
 	const response = await resolve(event);

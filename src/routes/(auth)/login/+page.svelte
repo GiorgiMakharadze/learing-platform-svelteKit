@@ -1,15 +1,15 @@
 <script lang="ts">
 	import * as Form from '$lib/components/ui/form';
 	import Input from '$lib/components/ui/input/input.svelte';
+	import { loginSchema } from '$lib/schema';
+	import { Loader2 } from 'lucide-svelte';
 	import { superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { loginSchema } from '../../../schema.js';
-	import { Loader2 } from 'lucide-svelte';
-
 	export let data;
 	const form = superForm(data.form, {
 		validators: zodClient(loginSchema)
 	});
+
 	const { form: formData, enhance, delayed } = form;
 </script>
 
@@ -32,19 +32,19 @@
 
 			<Form.FieldErrors />
 		</Form.Field>
-		<Form.Button class="w-full"
-			>{#if $delayed}
+		<Form.Button class="w-full">
+			{#if $delayed}
 				<Loader2 class="size-6 animate-spin " />
 			{:else}
 				Login
-			{/if}</Form.Button
-		>
+			{/if}
+		</Form.Button>
+
 		<div class="my-4 flex items-center">
 			<div class="flex-grow border-t border-gray-300"></div>
 			<div class="mx-4 text-gray-500">OR</div>
 			<div class="flex-grow border-t border-gray-300"></div>
 		</div>
-
 		<Form.Button class="w-full" variant="secondary" href="/register">Register</Form.Button>
 	</form>
 </div>
