@@ -25,10 +25,10 @@ export const actions: Actions = {
 		let courseRecord: RecordModel;
 		try {
 			courseRecord = await pb.collection('courses').create({ ...form.data, user: user?.id });
-		} catch (error) {
-			const { message: errorMessage } = error as ClientResponseError;
+		} catch (e) {
+			const { message: errorMessage } = e as ClientResponseError;
 			return message(form, errorMessage, { status: 400 });
 		}
-		throw redirect(303, `/reacher/courses/${courseRecord.id}`);
+		throw redirect(303, `/teacher/courses/${courseRecord.id}`);
 	}
 };
