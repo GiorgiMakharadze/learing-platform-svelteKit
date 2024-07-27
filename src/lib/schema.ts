@@ -19,14 +19,15 @@ export const registerSchema = z
 	});
 
 export const courseSchema = z.object({
-	title: z.string(),
-	description: z.string().min(10),
-	imageUrl: z.string().url().optional(),
-	price: z.number({ coerce: true }).int().min(0).optional(),
+	title: z.string().min(1),
+	description: z.string(),
+	imageUrl: z.string().optional(),
+	price: z.number({ coerce: true }).optional(),
 	isPublished: z.boolean(),
-	category: z.string().min(3)
+	category: z.string().optional()
 });
 
 export const titleSchema = courseSchema.pick({ title: true });
 export const descriptionSchema = courseSchema.pick({ description: true });
+export const categorySchema = courseSchema.pick({ category: true });
 export type CourseSchema = z.infer<typeof courseSchema>;

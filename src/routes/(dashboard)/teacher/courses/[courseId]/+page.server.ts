@@ -1,4 +1,4 @@
-import { descriptionSchema, titleSchema } from '$lib/schema.js';
+import { categorySchema, descriptionSchema, titleSchema } from '$lib/schema.js';
 import type { Category, Course } from '$lib/types.js';
 import { error, redirect, type Actions } from '@sveltejs/kit';
 import type { ClientResponseError } from 'pocketbase';
@@ -46,12 +46,14 @@ export const load = async ({ params, locals: { pb, user } }) => {
 	const [course, categories] = await Promise.all([getCourse(), getCategories()]);
 	const titleForm = await superValidate(course, zod(titleSchema));
 	const descriptionForm = await superValidate(course, zod(descriptionSchema));
+	const categoryForm = await superValidate(course, zod(categorySchema));
 
 	return {
 		course,
 		categories,
 		titleForm,
-		descriptionForm
+		descriptionForm,
+		categoryForm
 	};
 };
 
@@ -127,6 +129,31 @@ export const actions: Actions = {
 					message: errorMessage
 				});
 			}
+		}
+	},
+	updateCategory: async (event) => {
+		const {
+			locals: { pb },
+			params
+		} = event;
+		const { courseId } = params;
+
+		const form = await superValidate(event, zod(categorySchema));
+		if (!form.valid) {
+			return fail(400, {
+				form
+			});
+		}
+
+		try {
+			await pb.collection('courses').update(courseId || '', form.data);
+			return message(form, 'successfully updated course category');
+		} catch (e) {
+			const { message: errorMessage } = e as ClientResponseError;
+
+			return message(form, errorMessage, {
+				status: 400
+			});
 		}
 	}
 };
