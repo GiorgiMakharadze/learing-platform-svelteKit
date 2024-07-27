@@ -1,12 +1,13 @@
 <script lang="ts" context="module">
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	import type { FormPath, SuperForm } from "sveltekit-superforms";
 	type T = Record<string, unknown>;
-	type U = FormPath<T>;
+	type U = unknown;
 </script>
 
 <script lang="ts" generics="T extends Record<string, unknown>, U extends FormPath<T>">
 	import * as FormPrimitive from "formsnap";
-	import { cn } from "$lib/utils.js";
+	import { cn } from "$lib/utils";
 
 	type $$Props = FormPrimitive.FieldsetProps<T, U>;
 
