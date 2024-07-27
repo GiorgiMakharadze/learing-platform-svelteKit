@@ -1,1 +1,6 @@
-<script>import "../app.css";</script><slot></slot>
+<script>
+	import '@fontsource-variable/noto-sans';
+	import '../app.pcss';
+</script>
+
+<slot></slot>
