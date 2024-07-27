@@ -11,8 +11,8 @@
 	</Button>
 
 	<Avatar.Root>
-		<Avatar.Image src="https://avatars.githubusercontent.com/u/7221389?v=4" alt="Avatar" />
-		<Avatar.Fallback>LA</Avatar.Fallback>
+		<Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
+		<Avatar.Fallback>CN</Avatar.Fallback>
 	</Avatar.Root>
 	<form method="POST" action="/?/logout">
 		<Button size="sm" type="submit">Logout</Button>
