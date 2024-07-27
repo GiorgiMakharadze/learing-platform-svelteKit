@@ -1,5 +1,8 @@
+import { titleSchema } from '$lib/schema.js';
 import type { Category, Course } from '$lib/types.js';
 import { error, redirect } from '@sveltejs/kit';
+import { superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
 
 export const load = async ({ params, locals: { pb, user } }) => {
 	const { courseId } = params;
@@ -41,8 +44,10 @@ export const load = async ({ params, locals: { pb, user } }) => {
 	}
 
 	const [course, categories] = await Promise.all([getCourse(), getCategories()]);
+	const titleForm = await superValidate(course, zod(titleSchema));
 	return {
 		course,
-		categories
+		categories,
+		titleForm
 	};
 };
