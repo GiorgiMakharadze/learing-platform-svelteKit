@@ -1,6 +1,6 @@
-import { message, superValidate } from 'sveltekit-superforms';
+import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { fail, redirect, type Actions } from '@sveltejs/kit';
+import { redirect, type Actions } from '@sveltejs/kit';
 import type { ClientResponseError } from 'pocketbase';
 import { registerSchema } from '$lib/schema.js';
 
@@ -24,8 +24,8 @@ export const actions: Actions = {
 		try {
 			await pb.collection('users').create(form.data);
 		} catch (error) {
-			const { status } = error as ClientResponseError;
-			return message(form, { status, message: 'an error occurred' });
+			const { message: errorMessage } = error as ClientResponseError;
+			return message(form, errorMessage, { status: 400 });
 		}
 		throw redirect(303, '/');
 	}

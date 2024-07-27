@@ -4,11 +4,19 @@
 	import { registerSchema } from '$lib/schema';
 	import { Loader2 } from 'lucide-svelte';
 	import { superForm } from 'sveltekit-superforms';
+	import { toast } from 'svelte-sonner';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	export let data;
 
 	const form = superForm(data.form, {
-		validators: zodClient(registerSchema)
+		validators: zodClient(registerSchema),
+		onUpdated({ form }) {
+			if (form.message) {
+				if (!form.valid) {
+					toast.error(form.message);
+				}
+			}
+		}
 	});
 
 	const { form: formData, enhance, delayed } = form;

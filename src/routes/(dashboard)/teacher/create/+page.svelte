@@ -1,14 +1,24 @@
 <script lang="ts">
+	import Button from '$lib/components/ui/button/button.svelte';
 	import * as Form from '$lib/components/ui/form';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { titleSchema } from '$lib/schema.js';
+	import { Loader2 } from 'lucide-svelte';
+	import { toast } from 'svelte-sonner';
 	import { superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 
 	export let data;
 
 	const form = superForm(data.form, {
-		validators: zodClient(titleSchema)
+		validators: zodClient(titleSchema),
+		onUpdated({ form }) {
+			if (form.message) {
+				if (!form.valid) {
+					toast.error(form.message);
+				}
+			}
+		}
 	});
 	const { form: formData, enhance, delayed, submitting } = form;
 </script>
@@ -23,10 +33,21 @@
 			<Form.Field {form} name="title">
 				<Form.Control let:attrs>
 					<Form.Label>Title</Form.Label>
-					<Input {...attrs} bind:value={$formData.title} />
+					<Input disabled={$submitting} bind:value={$formData.title} />
 				</Form.Control>
+				<Form.Description>What would you teach in this course</Form.Description>
 				<Form.FieldErrors />
 			</Form.Field>
+			<div class="flex items-center gap-x-2">
+				<Button variant="ghost" href="/">Cancel</Button>
+				<Form.Button>
+					{#if $delayed}
+						<Loader2 class="size-6 animate-spin" />
+					{:else}
+						Continue
+					{/if}
+				</Form.Button>
+			</div>
 		</form>
 	</div>
 </div>

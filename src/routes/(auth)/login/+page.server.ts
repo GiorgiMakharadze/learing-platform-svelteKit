@@ -1,6 +1,6 @@
-import { superValidate } from 'sveltekit-superforms';
+import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { fail, redirect, type Actions } from '@sveltejs/kit';
+import { redirect, type Actions } from '@sveltejs/kit';
 import type { ClientResponseError } from 'pocketbase';
 import { loginSchema } from '$lib/schema.js';
 
@@ -24,11 +24,8 @@ export const actions: Actions = {
 		try {
 			await pb.collection('users').authWithPassword(form.data.email, form.data.password);
 		} catch (error) {
-			const { status } = error as ClientResponseError;
-			return fail(status, {
-				form,
-				message: 'An error occurred during login. Please check your credentials and try again.'
-			});
+			const { message: errorMessage } = error as ClientResponseError;
+			return message(form, errorMessage, { status: 400 });
 		}
 		throw redirect(302, '/');
 	}

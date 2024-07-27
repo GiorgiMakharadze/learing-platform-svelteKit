@@ -19,7 +19,7 @@ export const registerSchema = z
 	});
 
 export const courseSchema = z.object({
-	title: z.string().min(3),
+	title: z.string(),
 	description: z.string().min(10),
 	imageUrl: z.string().url().optional(),
 	price: z.number({ coerce: true }).int().min(0).optional(),
