@@ -5,13 +5,13 @@
 	import Button from './ui/button/button.svelte';
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
 	import { page } from '$app/stores';
-	import { cn } from '$lib/utils';
-	import { descriptionSchema } from '$lib/schema';
+	import { cn, formatCurrency } from '$lib/utils';
+	import { priceSchema } from '$lib/schema';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import Input from './ui/input/input.svelte';
-	export let data: SuperValidated<Infer<typeof descriptionSchema>>;
+	export let data: SuperValidated<Infer<typeof priceSchema>>;
 	const form = superForm(data, {
-		validators: zodClient(descriptionSchema),
+		validators: zodClient(priceSchema),
 		onUpdated({ form }) {
 			if (form.message) {
 				if (!form.valid) {
@@ -25,47 +25,53 @@
 		}
 	});
 	const { form: formData, enhance, delayed, submitting } = form;
+
 	let isEditing = false;
 	function toggleEdit() {
 		isEditing = !isEditing;
 	}
+
+	$: price = data.data.price!;
 </script>
 
 <div class="mt-6 border bg-muted rounded-md p-4">
 	<div class="font-medium flex items-center justify-between">
-		Course description
+		Course price
 
 		<Button on:click={toggleEdit} variant="ghost">
 			{#if isEditing}
 				cancel
 			{:else}
 				<Pencil class="size-4 mr-2" />
-				Edit description
+				Edit price
 			{/if}
 		</Button>
 	</div>
 	{#if !isEditing}
 		<p
 			class={cn('text-sm mt-2 break-all', {
-				'text-muted-foreground': !data.data.description
+				'text-muted-foreground': !data.data.price
 			})}
 		>
-			{data.data.description || 'No description'}
+			{(price && formatCurrency(price)) || 'No price'}
 		</p>
 	{:else}
 		<form
 			method="POST"
+			action="/teacher/courses/{$page.params.courseId}/?/updatePrice"
 			use:enhance
-			action="/teacher/courses/{$page.params.courseId}/?/updateDescription"
 			class="space-y-4 mt-4"
 		>
-			<Form.Field {form} name="description">
+			<Form.Field {form} name="price">
 				<Form.Control let:attrs>
-					<Form.Label>Description</Form.Label>
+					<Form.Label>Price</Form.Label>
 					<Input
 						{...attrs}
-						placeholder="e.g. this course is about..."
-						bind:value={$formData.description}
+						step="0.01"
+						type="number"
+						placeholder="set a price for your course"
+						disabled={$submitting}
+						bind:value={$formData.price}
 					/>
 				</Form.Control>
 				<Form.FieldErrors />

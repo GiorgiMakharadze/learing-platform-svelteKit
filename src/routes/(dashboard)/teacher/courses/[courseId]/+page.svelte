@@ -6,9 +6,9 @@
 	import DescriptionForm from '$lib/components/DescriptionForm.svelte';
 	import ImageForm from '$lib/components/ImageForm.svelte';
 	import CategoryForm from '$lib/components/CategoryForm.svelte';
+	import PriceForm from '$lib/components/PriceForm.svelte';
 	// import AttachmentForm from '$lib/components/AttachmentForm.svelte';
 	// import ChapterForm from '$lib/components/ChapterForm.svelte';
-	// import PriceForm from '$lib/components/PriceForm.svelte';
 	import {
 		AlertTriangle,
 		CircleDollarSign,
@@ -83,7 +83,7 @@
 					<IconBadge icon={CircleDollarSign} />
 					<h2 class="text-xl">Sell your course</h2>
 				</div>
-				<!-- <PriceForm data={data.priceForm} /> -->
+				<PriceForm data={data.priceForm} />
 			</div>
 			<div>
 				<div class="flex items-center gap-x-2">

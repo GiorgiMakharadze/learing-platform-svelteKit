@@ -4,14 +4,13 @@ export const loginSchema = z.object({
 	email: z.string().email(),
 	password: z.string().min(8)
 });
-
 export const registerSchema = z
 	.object({
 		firstName: z.string().min(3),
 		lastName: z.string().min(3),
 		email: z.string().email(),
 		password: z.string().min(8),
-		passwordConfirm: z.string().min(8)
+		passwordConfirm: z.string()
 	})
 	.refine((data) => data.password === data.passwordConfirm, {
 		message: 'Passwords do not match',
@@ -30,4 +29,4 @@ export const courseSchema = z.object({
 export const titleSchema = courseSchema.pick({ title: true });
 export const descriptionSchema = courseSchema.pick({ description: true });
 export const categorySchema = courseSchema.pick({ category: true });
-export type CourseSchema = z.infer<typeof courseSchema>;
+export const priceSchema = courseSchema.pick({ price: true });

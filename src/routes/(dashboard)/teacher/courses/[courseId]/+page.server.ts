@@ -1,15 +1,16 @@
-import { categorySchema, descriptionSchema, titleSchema } from '$lib/schema.js';
-import type { Category, Course } from '$lib/types.js';
-import { error, redirect, type Actions } from '@sveltejs/kit';
+import { type Attachment, type Category, type Chapter, type Course } from '$lib/types';
+import { error, fail, redirect } from '@sveltejs/kit';
+import { message, superValidate } from 'sveltekit-superforms/server';
 import type { ClientResponseError } from 'pocketbase';
-import { fail, message, superValidate } from 'sveltekit-superforms';
+import { categorySchema, descriptionSchema, priceSchema, titleSchema } from '$lib/schema.js';
+import Mux from '@mux/mux-node';
 import { zod } from 'sveltekit-superforms/adapters';
 
 export const load = async ({ params, locals: { pb, user } }) => {
 	const { courseId } = params;
 	const userId = user?.id;
 	if (!userId) {
-		throw redirect(303, '/login');
+		redirect(308, '/');
 	}
 	async function getCourse() {
 		try {
@@ -28,7 +29,6 @@ export const load = async ({ params, locals: { pb, user } }) => {
 			redirect(308, '/');
 		}
 	}
-
 	async function getCategories() {
 		try {
 			const categories = await pb.collection('categories').getFullList<Category>({
@@ -47,17 +47,18 @@ export const load = async ({ params, locals: { pb, user } }) => {
 	const titleForm = await superValidate(course, zod(titleSchema));
 	const descriptionForm = await superValidate(course, zod(descriptionSchema));
 	const categoryForm = await superValidate(course, zod(categorySchema));
-
+	const priceForm = await superValidate(course, zod(priceSchema));
 	return {
 		course,
 		categories,
 		titleForm,
 		descriptionForm,
-		categoryForm
+		categoryForm,
+		priceForm
 	};
 };
 
-export const actions: Actions = {
+export const actions = {
 	updateTitle: async (event) => {
 		const {
 			locals: { pb },
@@ -73,7 +74,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			await pb.collection('courses').update(courseId || '', form.data);
+			await pb.collection('courses').update(courseId, form.data);
 			return message(form, 'successfully updated course title');
 		} catch (e) {
 			const { message: errorMessage } = e as ClientResponseError;
@@ -83,7 +84,6 @@ export const actions: Actions = {
 			});
 		}
 	},
-
 	updateDescription: async (event) => {
 		const {
 			locals: { pb },
@@ -97,8 +97,9 @@ export const actions: Actions = {
 				form
 			});
 		}
+
 		try {
-			await pb.collection('courses').update(courseId || '', form.data);
+			await pb.collection('courses').update(courseId, form.data);
 			return message(form, 'successfully updated course description');
 		} catch (e) {
 			const { message: errorMessage } = e as ClientResponseError;
@@ -115,12 +116,14 @@ export const actions: Actions = {
 			request
 		} = event;
 		const { courseId } = params;
+
 		const formData = await request.formData();
+
 		const image = formData.get('image');
 
 		if (image instanceof File) {
 			try {
-				await pb.collection('courses').update(courseId || '', { imageUrl: image });
+				await pb.collection('courses').update(courseId, { imageUrl: image });
 				return { message: 'successfully updated course image' };
 			} catch (e) {
 				const { message: errorMessage } = e as ClientResponseError;
@@ -129,6 +132,10 @@ export const actions: Actions = {
 					message: errorMessage
 				});
 			}
+		} else {
+			return fail(400, {
+				message: 'Invalid file format'
+			});
 		}
 	},
 	updateCategory: async (event) => {
@@ -146,8 +153,33 @@ export const actions: Actions = {
 		}
 
 		try {
-			await pb.collection('courses').update(courseId || '', form.data);
+			await pb.collection('courses').update(courseId, form.data);
 			return message(form, 'successfully updated course category');
+		} catch (e) {
+			const { message: errorMessage } = e as ClientResponseError;
+
+			return message(form, errorMessage, {
+				status: 400
+			});
+		}
+	},
+	updatePrice: async (event) => {
+		const {
+			locals: { pb },
+			params
+		} = event;
+		const { courseId } = params;
+
+		const form = await superValidate(event, zod(priceSchema));
+		if (!form.valid) {
+			return fail(400, {
+				form
+			});
+		}
+
+		try {
+			await pb.collection('courses').update(courseId, form.data);
+			return message(form, 'successfully updated course price');
 		} catch (e) {
 			const { message: errorMessage } = e as ClientResponseError;
 

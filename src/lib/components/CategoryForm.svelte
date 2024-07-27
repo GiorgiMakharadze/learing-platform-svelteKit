@@ -8,9 +8,9 @@
 	import { toast } from 'svelte-sonner';
 
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
-	import { categorySchema } from '$lib/schema';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import * as Select from '$lib/components/ui/select';
+	import { categorySchema } from '$lib/schema';
 
 	export let data: SuperValidated<Infer<typeof categorySchema>>;
 	const form = superForm(data, {
