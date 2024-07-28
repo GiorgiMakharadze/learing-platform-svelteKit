@@ -1,9 +1,18 @@
-import { type Attachment, type Category, type Chapter, type Course } from '$lib/types';
+import { type Category, type Chapter, type Course } from '$lib/types';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { message, superValidate } from 'sveltekit-superforms/server';
 import type { ClientResponseError } from 'pocketbase';
-import { categorySchema, descriptionSchema, priceSchema, titleSchema } from '$lib/schema.js';
+import {
+	categorySchema,
+	chapterTitleSchema,
+	descriptionSchema,
+	priceSchema,
+	titleSchema
+} from '$lib/schema.js';
+import Mux from '@mux/mux-node';
+import { MUX_TOKEN_ID, MUX_TOKEN_SECRET } from '$env/static/private';
 import { zod } from 'sveltekit-superforms/adapters';
+const mux = new Mux({ tokenId: MUX_TOKEN_ID, tokenSecret: MUX_TOKEN_SECRET });
 
 export const load = async ({ params, locals: { pb, user } }) => {
 	const { courseId } = params;
@@ -47,13 +56,15 @@ export const load = async ({ params, locals: { pb, user } }) => {
 	const descriptionForm = await superValidate(course, zod(descriptionSchema));
 	const categoryForm = await superValidate(course, zod(categorySchema));
 	const priceForm = await superValidate(course, zod(priceSchema));
+	const chapterTitleForm = await superValidate(zod(chapterTitleSchema), { id: 'chapterTitleForm' });
 	return {
 		course,
 		categories,
 		titleForm,
 		descriptionForm,
 		categoryForm,
-		priceForm
+		priceForm,
+		chapterTitleForm
 	};
 };
 
@@ -197,12 +208,11 @@ export const actions = {
 
 		const formData = await request.formData();
 
-		const file = formData.get('file') as File;
-		const fileName = file?.name;
+		const file = formData.get('file');
 
 		try {
 			await pb.collection('attachments').create({
-				name: fileName,
+				name: 'whatever',
 				course: courseId,
 				url: file
 			});
@@ -215,12 +225,12 @@ export const actions = {
 			});
 		}
 	},
-
 	deleteAttachment: async (event) => {
 		const {
 			locals: { pb },
 			request
 		} = event;
+		// await new Promise((resolve) => setTimeout(resolve, 2000));
 
 		const formData = await request.formData();
 
@@ -237,5 +247,104 @@ export const actions = {
 				message: errorMessage
 			});
 		}
+	},
+	createChapter: async (event) => {
+		const {
+			locals: { pb },
+
+			params
+		} = event;
+		const { courseId } = params;
+
+		const form = await superValidate(event, zod(chapterTitleSchema));
+		if (!form.valid) {
+			return fail(400, {
+				form
+			});
+		}
+
+		let lastChapter: Chapter | null = null;
+		try {
+			lastChapter = await pb
+				.collection('chapters')
+				.getFirstListItem<Chapter>(`course="${courseId}"`, {
+					sort: '-position'
+				});
+		} catch {
+			lastChapter = null;
+		}
+
+		try {
+			const newPosition = lastChapter ? lastChapter.position + 1 : 1;
+			await pb.collection('chapters').create({
+				title: form.data.title,
+				course: courseId,
+				position: newPosition
+			});
+			return message(form, 'successfully added course chapter');
+		} catch (e) {
+			console.log('🚀 ~ createChapter: ~ e:', e);
+			const { message: errorMessage } = e as ClientResponseError;
+
+			return message(form, errorMessage, {
+				status: 400
+			});
+		}
+	},
+	updatePublish: async (event) => {
+		const {
+			locals: { pb },
+			params
+		} = event;
+		const { courseId } = params;
+
+		try {
+			const course = await pb.collection('courses').getOne<Course>(courseId);
+			if (course.isPublished) {
+				await pb.collection('courses').update(courseId, {
+					isPublished: false
+				});
+
+				return { message: 'successfully unpublished course' };
+			} else {
+				await pb.collection('courses').update(courseId, {
+					isPublished: true
+				});
+				return { message: 'successfully published course', confetti: true };
+			}
+		} catch (e) {
+			const { message: errorMessage } = e as ClientResponseError;
+
+			return fail(400, {
+				message: errorMessage
+			});
+		}
+	},
+	deleteCourse: async (event) => {
+		const {
+			locals: { pb },
+			params
+		} = event;
+		const { courseId } = params;
+		try {
+			const course = await pb.collection('courses').getOne<Course>(courseId, {
+				expand: 'chapters(course).muxData(chapterId)'
+			});
+
+			for (const chapter of course.expand?.['chapters(course)'] ?? []) {
+				if (chapter.expand?.['muxData(chapterId)']) {
+					await mux.video.assets.delete(chapter.expand['muxData(chapterId)'][0].assetId);
+				}
+			}
+			await pb.collection('courses').delete(courseId);
+		} catch (e) {
+			const { message: errorMessage, status } = e as ClientResponseError;
+			if (status === 404) error(404, 'course does not exist');
+
+			return fail(400, {
+				message: errorMessage
+			});
+		}
+		redirect(308, '/teacher/courses');
 	}
 };

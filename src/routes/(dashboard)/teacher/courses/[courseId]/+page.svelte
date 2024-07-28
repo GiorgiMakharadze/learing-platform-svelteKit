@@ -1,15 +1,15 @@
 <script lang="ts">
-	import * as Alert from '$lib/components/ui/alert';
-	// import Actions from '$lib/components/Actions.svelte';
-	import IconBadge from '$lib/components/IconBadge.svelte';
-	import TitleForm from '$lib/components/TitleForm.svelte';
-	import DescriptionForm from '$lib/components/DescriptionForm.svelte';
-	import ImageForm from '$lib/components/ImageForm.svelte';
-	import CategoryForm from '$lib/components/CategoryForm.svelte';
-	import PriceForm from '$lib/components/PriceForm.svelte';
+	import { page } from '$app/stores';
+	import Actions from '$lib/components/Actions.svelte';
 	import AttachmentForm from '$lib/components/AttachmentForm.svelte';
-	// import AttachmentForm from '$lib/components/AttachmentForm.svelte';
-	// import ChapterForm from '$lib/components/ChapterForm.svelte';
+	import CategoryForm from '$lib/components/CategoryForm.svelte';
+	import ChapterForm from '$lib/components/ChapterForm.svelte';
+	import DescriptionForm from '$lib/components/DescriptionForm.svelte';
+	import IconBadge from '$lib/components/IconBadge.svelte';
+	import ImageForm from '$lib/components/ImageForm.svelte';
+	import PriceForm from '$lib/components/PriceForm.svelte';
+	import TitleForm from '$lib/components/TitleForm.svelte';
+	import * as Alert from '$lib/components/ui/alert';
 	import {
 		AlertTriangle,
 		CircleDollarSign,
@@ -19,14 +19,13 @@
 	} from 'lucide-svelte';
 	export let data;
 	$: course = data.course;
-
 	$: requiredField = [
 		course.title,
 		course.description,
 		course.imageUrl,
 		course.price,
 		course.category,
-		course.expand?.['chapters(course)']?.some((chapter: any) => chapter.isPublished)
+		course.expand?.['chapters(course)']?.some((chapter) => chapter.isPublished)
 	];
 	$: totalFields = requiredField.length;
 	$: completedFields = requiredField.filter(Boolean).length;
@@ -44,7 +43,6 @@
 		>
 	</Alert.Root>
 {/if}
-
 <div class="p-6">
 	<div class="flex items-center justify-between">
 		<div class="flex flex-col gap-y-2">
@@ -54,7 +52,7 @@
 			</span>
 		</div>
 		<!-- add actions -->
-		<!-- <Actions disabled={!isComplete} isPublished={course.isPublished} /> -->
+		<Actions disabled={!isComplete} isPublished={course.isPublished} />
 	</div>
 
 	<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
@@ -74,10 +72,10 @@
 					<IconBadge icon={ListChecks} />
 					<h2 class="text-xl">Course chapters</h2>
 				</div>
-				<!-- <ChapterForm
+				<ChapterForm
 					chapters={data.course.expand?.['chapters(course)'] ?? []}
 					data={data.chapterTitleForm}
-				/> -->
+				/>
 			</div>
 			<div>
 				<div class="flex items-center gap-x-2">

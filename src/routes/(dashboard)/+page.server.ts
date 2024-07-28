@@ -1,6 +1,6 @@
-import type { Actions } from '@sveltejs/kit';
+export const load = async ({ locals: { pb } }) => {};
 
-export const actions: Actions = {
+export const actions = {
 	logout: async (event) => {
 		const {
 			locals: { pb }

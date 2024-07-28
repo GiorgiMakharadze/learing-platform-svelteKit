@@ -8,9 +8,9 @@
 	import { toast } from 'svelte-sonner';
 
 	import { superForm, type Infer, type SuperValidated } from 'sveltekit-superforms';
+	import { categorySchema } from '$lib/schema';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import * as Select from '$lib/components/ui/select';
-	import { categorySchema } from '$lib/schema';
 
 	export let data: SuperValidated<Infer<typeof categorySchema>>;
 	const form = superForm(data, {
@@ -29,6 +29,7 @@
 	});
 	const { form: formData, enhance, delayed, submitting } = form;
 	$: selectedValue = categories.find((category) => category.id === $formData.category)?.name;
+	console.log('🚀 ~ selectedValue:', selectedValue);
 	let isEditing = false;
 	function toggleEdit() {
 		isEditing = !isEditing;

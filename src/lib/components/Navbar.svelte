@@ -3,7 +3,7 @@
 	import NavbarRoutes from './NavbarRoutes.svelte';
 </script>
 
-<div class="p-4 border-b h-full flex item-center bg-background shadow-sm">
+<div class="p-4 border-b h-full flex items-center bg-background shadow-sm">
 	<MobileSidebar />
 	<NavbarRoutes />
 </div>

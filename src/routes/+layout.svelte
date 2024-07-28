@@ -1,14 +1,23 @@
-<script>
-	import '@fontsource-variable/noto-sans';
-	import '../app.pcss';
+<script lang="ts">
+	import '@fontsource/noto-sans';
+	import '@fontsource/noto-sans/100.css';
+	import '@fontsource/noto-sans/200.css';
+	import '@fontsource/noto-sans/300.css';
+	import '@fontsource/noto-sans/400.css';
+	import '@fontsource/noto-sans/500.css';
+	import '@fontsource/noto-sans/600.css';
+	import '@fontsource/noto-sans/700.css';
+	import '@fontsource/noto-sans/800.css';
+	import '@fontsource/noto-sans/900.css';
+	import 'quill/dist/quill.snow.css';
 
-	import { ModeWatcher } from 'mode-watcher';
+	import '../app.pcss';
 	import { Toaster } from '$lib/components/ui/sonner';
+	import { ModeWatcher } from 'mode-watcher';
 </script>
 
-<Toaster richColors closeButton theme="light" />
 <ModeWatcher defaultMode={'light'} />
-
-<main class="h-screen">
+<Toaster richColors closeButton theme="light" />
+<div class="h-screen">
 	<slot />
-</main>
+</div>

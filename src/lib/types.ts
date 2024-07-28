@@ -4,7 +4,7 @@ import type { CourseSchema } from './schema';
 export type Course = RecordModel &
 	CourseSchema & {
 		user: string;
-		expand: {
+		expand?: {
 			category: Category;
 			user: AuthModel;
 			'attachments(course)'?: Attachment[];
@@ -12,11 +12,9 @@ export type Course = RecordModel &
 			'purchase(course)'?: Purchase[];
 		};
 	};
-
 export type Category = RecordModel & {
 	name: string;
 };
-
 export type Attachment = RecordModel & {
 	name: string;
 	url: File;
@@ -25,7 +23,6 @@ export type Attachment = RecordModel & {
 		course: Course;
 	};
 };
-
 export type Chapter = RecordModel & {
 	title: string;
 	description: string;
@@ -38,14 +35,24 @@ export type Chapter = RecordModel & {
 		'muxData(chapterId)'?: MuxData[];
 	};
 };
-
 export type MuxData = RecordModel & {
 	assetId: string;
 	playbackId: string;
 	chapterId: boolean;
 };
-
+export type UserProgress = RecordModel & {
+	user: string;
+	chapter: string;
+	isCompleted: boolean;
+};
 export type Purchase = RecordModel & {
 	user: string;
 	course: string;
+};
+
+export type Progress = {
+	progress: number | null;
+};
+export type CourseWithProgressWithCategory = Course & {
+	progress: number | null;
 };

@@ -42,7 +42,7 @@
 				<Form.Description>what would you teach in this course</Form.Description>
 				<Form.FieldErrors />
 			</Form.Field>
-
+	
 			<div class="flex items-center gap-x-2">
 				<Button variant="ghost" href="/">cancel</Button>
 				<Form.Button disabled={$submitting}

@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import { Files, Loader2, Pencil, PlusCircle, UploadCloud, X } from 'lucide-svelte';
+	import { Files, ImageIcon, Loader2, Pencil, PlusCircle, UploadCloud, X } from 'lucide-svelte';
 	import Button from './ui/button/button.svelte';
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
+	import { cn } from '$lib/utils';
 	import type { Attachment } from '$lib/types';
 	import { fly, slide } from 'svelte/transition';
 
