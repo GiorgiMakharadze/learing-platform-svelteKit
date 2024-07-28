@@ -4,7 +4,7 @@ import type { CourseSchema } from './schema';
 export type Course = RecordModel &
 	CourseSchema & {
 		user: string;
-		expand?: {
+		expand: {
 			category: Category;
 			user: AuthModel;
 			'attachments(course)'?: Attachment[];

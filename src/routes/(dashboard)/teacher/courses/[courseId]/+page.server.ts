@@ -3,7 +3,6 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { message, superValidate } from 'sveltekit-superforms/server';
 import type { ClientResponseError } from 'pocketbase';
 import { categorySchema, descriptionSchema, priceSchema, titleSchema } from '$lib/schema.js';
-import Mux from '@mux/mux-node';
 import { zod } from 'sveltekit-superforms/adapters';
 
 export const load = async ({ params, locals: { pb, user } }) => {
@@ -185,6 +184,57 @@ export const actions = {
 
 			return message(form, errorMessage, {
 				status: 400
+			});
+		}
+	},
+	createAttachment: async (event) => {
+		const {
+			locals: { pb },
+			params,
+			request
+		} = event;
+		const { courseId } = params;
+
+		const formData = await request.formData();
+
+		const file = formData.get('file') as File;
+		const fileName = file?.name;
+
+		try {
+			await pb.collection('attachments').create({
+				name: fileName,
+				course: courseId,
+				url: file
+			});
+			return { message: 'successfully added course attachment' };
+		} catch (e) {
+			const { message: errorMessage } = e as ClientResponseError;
+
+			return fail(400, {
+				message: errorMessage
+			});
+		}
+	},
+
+	deleteAttachment: async (event) => {
+		const {
+			locals: { pb },
+			request
+		} = event;
+
+		const formData = await request.formData();
+
+		const id = formData.get('id') as string;
+
+		try {
+			await pb.collection('attachments').delete(id);
+
+			return { message: 'successfully deleted course attachment' };
+		} catch (e) {
+			const { message: errorMessage } = e as ClientResponseError;
+
+			return fail(400, {
+				message: errorMessage
 			});
 		}
 	}

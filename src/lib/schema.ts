@@ -30,3 +30,5 @@ export const titleSchema = courseSchema.pick({ title: true });
 export const descriptionSchema = courseSchema.pick({ description: true });
 export const categorySchema = courseSchema.pick({ category: true });
 export const priceSchema = courseSchema.pick({ price: true });
+
+export type CourseSchema = z.infer<typeof courseSchema>;

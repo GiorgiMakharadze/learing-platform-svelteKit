@@ -29,7 +29,6 @@
 	});
 	const { form: formData, enhance, delayed, submitting } = form;
 	$: selectedValue = categories.find((category) => category.id === $formData.category)?.name;
-	console.log('🚀 ~ selectedValue:', selectedValue);
 	let isEditing = false;
 	function toggleEdit() {
 		isEditing = !isEditing;

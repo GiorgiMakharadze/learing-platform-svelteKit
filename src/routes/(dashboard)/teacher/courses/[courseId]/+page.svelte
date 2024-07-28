@@ -7,6 +7,7 @@
 	import ImageForm from '$lib/components/ImageForm.svelte';
 	import CategoryForm from '$lib/components/CategoryForm.svelte';
 	import PriceForm from '$lib/components/PriceForm.svelte';
+	import AttachmentForm from '$lib/components/AttachmentForm.svelte';
 	// import AttachmentForm from '$lib/components/AttachmentForm.svelte';
 	// import ChapterForm from '$lib/components/ChapterForm.svelte';
 	import {
@@ -90,7 +91,7 @@
 					<IconBadge icon={File} />
 					<h2 class="text-xl">Resources & Attachments</h2>
 				</div>
-				<!-- <AttachmentForm attachments={data.course?.expand?.['attachments(course)'] ?? []} /> -->
+				<AttachmentForm attachments={data.course?.expand?.['attachments(course)'] ?? []} />
 			</div>
 		</div>
 	</div>
